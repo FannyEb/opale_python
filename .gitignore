@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.spec
+*.log
+
+# Virtualenv
+venv/
+env/
+.venv/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Mac OS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Config / cache divers
+*.bak
+*.swp
+*.tmp
+
+# PyInstaller
+# Les dossiers créés par PyInstaller
+dist/
+build/
+*.spec
+
+# Logs éventuels
+*.log
+
+# Fichiers utilisateur
+*.user
+*.suo
+
+# Tkinter cache (rare)
+tkinter*.pyc
+
+# VS Code Python cache
+.pytest_cache/
+.pyre/
+.mypy_cache/
+
+# Environnement / dependances locales
+pip-wheel-metadata/
+pip-log.txt
+
+# Optionnel: fichiers data si tu veux qu'ils ne soient pas versionnés
+# data/
+# config.json

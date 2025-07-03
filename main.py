@@ -3,10 +3,22 @@ import customtkinter as ctk
 from daily_tasks import DailyTasksPage
 from monthly_summary import MonthlySummaryPage
 from settings import SettingsPage
+import sys
+import os
 
-ctk.set_appearance_mode("Dark")  # "Dark" ou "System"
-ctk.set_default_color_theme("./style/custom_theme.json")
+def resource_path(relative_path):
+    """ Obtenir le chemin absolu au fichier, que ce soit dans PyInstaller ou non """
+    try:
+        # PyInstaller crée un dossier temporaire dans _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
 
+    return os.path.join(base_path, relative_path)
+
+custom_theme_path = resource_path("style/custom_theme.json")
+ctk.set_appearance_mode("System")  # "Dark" ou "System"
+ctk.set_default_color_theme(custom_theme_path)
 
 
 class App(ctk.CTk):
@@ -36,8 +48,8 @@ class App(ctk.CTk):
 
         # Bouton icône settings
         gear_image = ctk.CTkImage(
-            light_image=Image.open("assets/icons/setting.png"),
-            dark_image=Image.open("assets/icons/setting.png"),
+            light_image=Image.open(resource_path("assets/setting.png")),
+            dark_image=Image.open(resource_path("assets/setting.png")),
             size=(20, 20)
         )
         btn_settings = ctk.CTkButton(nav_frame, text="", image=gear_image, width=40, command=self.show_settings)
