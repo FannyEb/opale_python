@@ -85,8 +85,6 @@ class App(ctk.CTk):
             frame.display_summary()
         elif page_name == "DailyTasksPage":
             frame.display_tasks()
-        elif page_name == "SettingsPage":
-            frame.load_opale_list()
 
 if __name__ == "__main__":
     app = App()
