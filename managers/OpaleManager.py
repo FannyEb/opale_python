@@ -36,3 +36,18 @@ def load_opale_list():
         return [(str(item["id"]), item.get("title", f"Opale {item['id']}")) for item in opale_list]
     except FileNotFoundError:
         return []
+
+def delete_opale_line(title: str) -> bool:
+    try:
+        with open(OPALE_JSON_PATH, "r", encoding="utf-8") as f:
+            opales = json.load(f)
+    except FileNotFoundError:
+        return False
+
+    filtered = [o for o in opales if o.get("title") != title]
+    if len(filtered) == len(opales):
+        return False
+
+    with open(OPALE_JSON_PATH, "w", encoding="utf-8") as f:
+        json.dump(filtered, f, indent=2, ensure_ascii=False)
+    return True
