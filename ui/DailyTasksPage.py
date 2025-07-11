@@ -14,11 +14,7 @@ from ui.TaskModal import TaskModal
 class DailyTasksPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
-
-        self.create_add_task_bar()
-        self.scroll_frame = ctk.CTkScrollableFrame(self, width=600, height=350)
-        self.scroll_frame.pack(fill="both", expand=True, padx=10, pady=10)
-
+        self.controller = controller
         self.display_tasks()
 
     def create_add_task_bar(self):
@@ -26,7 +22,7 @@ class DailyTasksPage(ctk.CTkFrame):
         form_frame.pack(fill="x", padx=10, pady=10)
 
         self.task_entry = ctk.CTkEntry(form_frame, placeholder_text="Entrer une nouvelle tâche...")
-        self.task_entry.pack(side="left", fill="x", expand=True, padx=5)
+        self.task_entry.pack(side="left", fill="x", expand=True, padx=5, pady=5)
         self.task_entry.bind("<Return>", lambda e: self.add_task())
 
         add_button = ctk.CTkButton(form_frame, text="Ajouter", command=self.add_task)
@@ -71,58 +67,54 @@ class DailyTasksPage(ctk.CTkFrame):
         save_tasks(tasks)
 
     def display_tasks(self):
-        for widget in self.scroll_frame.winfo_children():
+        for widget in self.winfo_children():
             widget.destroy()
 
+        self.create_add_task_bar()
         tasks_by_date = defaultdict(list)
         for task in load_tasks():
             date_str = task.date.strftime("%Y-%m-%d") if task.date else "?"
             tasks_by_date[date_str].append(task)
 
-        row = 0
         for date_str in sorted(tasks_by_date.keys(), reverse=True):
-            ctk.CTkLabel(self.scroll_frame, text=date_str, font=("Arial", 16, "bold"))\
-                .grid(row=row, column=0, columnspan=6, sticky="w", padx=10, pady=5)
-            row += 1
+            date_label = ctk.CTkLabel(self, text=date_str, font=("Arial", 16, "bold"))
+            date_label.pack(anchor="w", padx=10, pady=5)
 
             for task in tasks_by_date[date_str]:
-                self.create_task_row(task, row)
-                row += 1
+                self.create_task_row(task)
 
-    def create_task_row(self, task, row):
+    def create_task_row(self, task):
+        row_frame = ctk.CTkFrame(self)
+        row_frame.pack(fill="x", padx=10, pady=2)
+
         if task.endDate:
             duration = compute_duration(task.date, task.endDate)
-            ctk.CTkLabel(self.scroll_frame, text=duration).grid(row=row, column=0, padx=10, sticky="w")
+            ctk.CTkLabel(row_frame, text=duration, width=80).pack(side="left", padx=5)
         else:
-            ctk.CTkButton(self.scroll_frame, text="Finir", width=60,
+            ctk.CTkButton(row_frame, text="Finir", width=60,
                           command=lambda tid=task.id: self.finish_task(tid))\
-                .grid(row=row, column=0, padx=10, pady=2, sticky="w")
+                .pack(side="left", padx=5)
 
-        title_label = ctk.CTkLabel(self.scroll_frame, text=task.title, cursor="hand2")
-        title_label.grid(row=row, column=1, padx=10, pady=2, sticky="w")
+        title_label = ctk.CTkLabel(row_frame, text=task.title, cursor="hand2")
+        title_label.pack(side="left", padx=5)
         title_label.bind("<Button-1>", lambda e, t=task: self.open_modal(t))
         title_label.bind("<Enter>", lambda e, lbl=title_label: lbl.configure(font=("Arial", 12, "underline")))
         title_label.bind("<Leave>", lambda e, lbl=title_label: lbl.configure(font=("Arial", 12, "normal")))
 
-        # Autocomplete Opale
         opale_titles = [title for _id, title in load_opale_list()]
         current_title = next((title for _id, title in load_opale_list() if int(_id) == task.opale), "")
-        autocomplete = SimpleAutocomplete(self.scroll_frame, opale_titles)
-        autocomplete.grid(row=row, column=2, padx=10, pady=2, sticky="w")
+        autocomplete = SimpleAutocomplete(row_frame, opale_titles)
+        autocomplete.pack(side="left", padx=5)
         if current_title:
             autocomplete.entry.insert(0, current_title)
         autocomplete.entry.bind("<FocusOut>", lambda e, t=task, a=autocomplete: self.update_opale(t, a.get()))
 
-        col = 3
         if task.linkJira:
-            ctk.CTkButton(self.scroll_frame, text="JIRA", width=60,
-                          command=lambda url=task.linkJira: self.open_link(url))\
-                .grid(row=row, column=col, padx=5, pady=2)
-            col += 1
+            ctk.CTkButton(row_frame, text="JIRA", width=60,
+                          command=lambda url=task.linkJira: self.open_link(url)).pack(side="left", padx=5)
         if task.linkSpec:
-            ctk.CTkButton(self.scroll_frame, text="Spec", width=60,
-                          command=lambda url=task.linkSpec: self.open_link(url))\
-                .grid(row=row, column=col, padx=5, pady=2)
+            ctk.CTkButton(row_frame, text="Spec", width=60,
+                          command=lambda url=task.linkSpec: self.open_link(url)).pack(side="left", padx=5)
 
     def open_modal(self, task):
         TaskModal(self, task, refresh_callback=self.display_tasks)

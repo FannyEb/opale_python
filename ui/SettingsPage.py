@@ -1,10 +1,11 @@
 import customtkinter as ctk
-from tkinter import filedialog, messagebox
+from tkinter import messagebox
 from datetime import datetime, date
 from tkcalendar import DateEntry
 
 from managers.OpaleManager import add_opale_line, load_opale_list, delete_opale_line
 from managers.TaskManager import delete_tasks_between
+from managers.ConfigManager import get_appearance_mode, get_theme_file, set_appearance_mode, set_theme_file
 from utils.FileUtils import get_data_folder
 from ui.Autocomplete import SimpleAutocomplete
 
@@ -60,6 +61,40 @@ class SettingsPage(ctk.CTkFrame):
         )
         del_tasks_btn.pack(pady=15)
 
+        # --- SÉLECTION DE L'APPARENCE ---
+        ctk.CTkLabel(self, text="Apparence de l'application :", anchor="w").pack(fill="x", padx=20, pady=(20, 5))
+        self.appearance_var = ctk.StringVar(value="Light")
+
+        appearance_frame = ctk.CTkFrame(self)
+        appearance_frame.pack(fill="x", padx=20, pady=5)
+        for mode in ["Light", "Dark", "System"]:
+            rb = ctk.CTkRadioButton(appearance_frame, text=mode, variable=self.appearance_var, value=mode,
+                                    command=self.change_appearance)
+            rb.pack(side="left", padx=10, pady=5)
+
+        # --- SÉLECTION DU THÈME ---
+        ctk.CTkLabel(self, text="Thème de l'application :", anchor="w").pack(fill="x", padx=20, pady=(20, 5))
+
+        self.theme_var = ctk.StringVar()
+
+        self.themes = {
+            "Blue": "style/blue.json",
+            "Orange": "style/orange.json",
+            "Violet": "style/purple.json",
+            "Vert": "style/green.json",
+        }
+
+        theme_frame = ctk.CTkFrame(self)
+        theme_frame.pack(fill="x", padx=20, pady=5)
+
+        for theme_name in self.themes.keys():
+            rb = ctk.CTkRadioButton(theme_frame, text=theme_name, variable=self.theme_var, value=theme_name,
+                                    command=self.change_theme)
+            rb.pack(side="left", padx=10, pady=5)
+
+        self.load_current_theme()
+        self.load_current_appearance()
+
     def add_opale(self):
         opale_title = self.opale_title_var.get().strip()
         if not opale_title:
@@ -112,3 +147,34 @@ class SettingsPage(ctk.CTkFrame):
 
         self.del_start_date.set_date(date.today())
         self.del_end_date.set_date(date.today())
+
+    def load_current_theme(self):
+        current_theme_file = get_theme_file()
+        theme_name = next((name for name, file in self.themes.items() if file == current_theme_file), "Blue")
+        self.theme_var.set(theme_name)  
+
+    def load_current_appearance(self):
+        current_mode = get_appearance_mode()
+        if current_mode not in ["Light", "Dark", "System"]:
+            current_mode = "System"  # Valeur par défaut si invalide
+        self.appearance_var.set(current_mode)
+
+
+    def change_theme(self):
+        choice = self.theme_var.get()
+        theme_file = self.themes.get(choice)
+        if not theme_file:
+            messagebox.showerror("Erreur", "Thème invalide.")
+            return
+
+        set_theme_file(theme_file)
+        ctk.set_default_color_theme(theme_file)
+
+    def change_appearance(self):
+        mode = self.appearance_var.get()
+        if mode not in ["Light", "Dark", "System"]:
+            messagebox.showerror("Erreur", "Mode d'apparence invalide.")
+            return
+        set_appearance_mode(mode)  # sauvegarde dans le config.json
+        ctk.set_appearance_mode(mode)  # applique immédiatement
+
