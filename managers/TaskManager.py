@@ -9,9 +9,14 @@ TASKS_JSON_PATH = os.path.join(get_data_folder(), "tasks.json")
 def load_tasks():
     try:
         with open(TASKS_JSON_PATH, "r", encoding="utf-8") as f:
-            return [Task.from_dict(item) for item in json.load(f)]
+            try:
+                data = json.load(f)
+            except json.JSONDecodeError:
+                data = []
     except FileNotFoundError:
-        return []
+        data = []
+
+    return [Task.from_dict(item) for item in data]
 
 def save_tasks(tasks):
     with open(TASKS_JSON_PATH, "w", encoding="utf-8") as f:

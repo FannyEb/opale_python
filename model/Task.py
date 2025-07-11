@@ -29,9 +29,11 @@ class Task:
         return {
             "id": self.id,
             "title": self.title,
-            "date": self.date.isoformat() if self.date else None,
+            "date": self.date.isoformat() if isinstance(self.date, datetime) else self.date,
             "linkJira": self.linkJira,
             "linkSpec": self.linkSpec,
             "opale": self.opale,
-            "endDate": self.endDate.isoformat() if self.endDate else None
+            "endDate": self.endDate.isoformat() if isinstance(self.endDate, datetime) else self.endDate,
         }
+
+
