@@ -16,8 +16,7 @@ class MonthlySummaryPage(ctk.CTkFrame):
     def display_summary(self):
 
         tasks = load_tasks()
-        summary = defaultdict(lambda: defaultdict(int))  # { date: { opale: total_minutes } }
-
+        summary = defaultdict(lambda: defaultdict(int))
         for task in tasks:
             start = task.date.isoformat() if task.date else None
             end = task.endDate.isoformat() if task.endDate else None

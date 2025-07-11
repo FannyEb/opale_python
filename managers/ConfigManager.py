@@ -5,7 +5,7 @@ import shutil
 from utils.FileUtils import get_data_folder
 
 DEFAULT_THEME = "style/blue.json"
-APP_DIR_NAME = ".OPALE"
+APP_DIR_NAME = ".OPALE_Helper"
 DEFAULT_APPEARANCE = "System"
 
 def resource_path(relative_path):

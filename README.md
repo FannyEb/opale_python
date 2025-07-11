@@ -7,4 +7,4 @@
 ## Pour créer un .exe
 1. Installez PyInstaller avec `pip install pyinstaller`
 2. Exécutez la commande suivante :
-`pyinstaller --onefile --noconsole --add-data "data:data" --add-data "style:style" --add-data "assets:assets" main.py`
+`pyinstaller --onefile --noconsole --add-data "style:style" --add-data "assets:assets" main.py`

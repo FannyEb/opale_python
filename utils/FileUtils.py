@@ -3,7 +3,7 @@ import json
 import sys
 import shutil
 
-APP_FOLDER_NAME = ".OPALE"
+APP_FOLDER_NAME = ".OPALE_Helper"
 
 def resource_path(relative_path):
     """
