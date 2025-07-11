@@ -1,8 +1,8 @@
 from PIL import Image
 import customtkinter as ctk
-from daily_tasks import DailyTasksPage
-from monthly_summary import MonthlySummaryPage
-from settings import SettingsPage
+from ui.DailyTasksPage import DailyTasksPage
+from ui.MonthlySummaryPage import MonthlySummaryPage
+from ui.SettingsPage import SettingsPage
 import sys
 import os
 
